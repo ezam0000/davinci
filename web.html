@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>DaVinci Text Generator</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+		form {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			margin-top: 50px;
+		}
+		
+		button[type="button"] {
+			margin-top: 20px;
+			padding: 10px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+		
+		textarea {
+			margin-top: 20px;
+			width: 80%;
+			height: 200px;
+			border: solid 1px #ccc;
+			border-radius: 5px;
+			padding: 10px;
+			resize: none;
+		}
+	</style>
+</head>
+<body>
+	<h1>DaVinci Text Generator</h1>
+	<form>
+		<label for="temperature">Temperature:</label>
+		<input type="number" name="temperature" id="temperature" min="0" max="1" step="0.01" value="0.5" required>
+		<label for="length">Length:</label>
+		<input type="number" name="length" id="length" min="1" max="2048" value="256" required>
+		<label for="top_p">Top P:</label>
+		<input type="number" name="top_p" id="top_p" min="0" max="1" step="0.01" value="0.9" required>
+		<label for="frequency_penalty">Frequency Penalty:</label>
+		<input type="number" name="frequency_penalty" id="frequency_penalty" min="0" max="1" step="0.01" value="0" required>
+		<label for="presence_penalty">Presence Penalty:</label>
+		<input type="number" name="presence_penalty" id="presence_penalty" min="0, max="1" step="0.01" value="0" required>
+		<button type="button" onclick="generateText()">Generate Text</button>
+		<textarea id="output"></textarea>
+	</form>
+	<script>
+		function generateText() {
+			const temperature = document.querySelector('#temperature').value;
+			const length = document.querySelector('#length').value;
+			const top_p = document.querySelector('#top_p').value;
+			const frequency_penalty = document.querySelector('#frequency_penalty').value;
+			const presence_penalty = document.querySelector('#presence_penalty').value;
+			const input_text = document.querySelector('#input_text').value;
+
+			const xhr = new XMLHttpRequest();
+			const url = "generate_text.php";
+			const params = `temperature=${temperature}&length=${length}&top_p=${top_p}&frequency_penalty=${frequency_penalty}&presence_penalty=${presence_penalty}&input_text=${input_text}`;
+			xhr.open("POST", url, true);
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState === 4 && xhr.status === 200) {
+					const output_text = JSON.parse(xhr.responseText).text;
+					document.querySelector('#output').value = output_text;
+				}
+			};
+			xhr.send(params);
+		}
+	</script>
+</body>
+</html>
